@@ -25,9 +25,24 @@ export function Dashboard() {
       </Style.Header>
 
       <Style.HightlightCards>
-        <HighlightCard />
-        <HighlightCard />
-        <HighlightCard />
+        <HighlightCard
+          type="up"
+          title="Entrada"
+          amount="R$ 17.000,00"
+          lastTransaction="Ultima em 18 de abril"
+        />
+        <HighlightCard
+          type="down"
+          title="Saída"
+          amount="R$ 10.000,00"
+          lastTransaction="Ultima em 19 de abril"
+        />
+        <HighlightCard
+          type="total"
+          title="Total"
+          amount="R$ 7.000,00"
+          lastTransaction="Ultima em 19 de abril"
+        />
       </Style.HightlightCards>
     </Style.Container>
   );
