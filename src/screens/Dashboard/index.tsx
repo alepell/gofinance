@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { HighlightCard } from "../../components/HighlightCard";
 import {
   TransactionCard,
@@ -11,32 +12,46 @@ export interface DataListProps extends TransactionCardProps {
 }
 
 export function Dashboard() {
-  const data: DataListProps[] = [
-    {
-      id: "1",
-      type: "positive",
-      title: "Desenvolvimento de site",
-      amount: "R$ 16.000,00",
-      category: { name: "Vendas", icon: "dollar-sign" },
-      date: "18/04/2021",
-    },
-    {
-      id: "2",
-      type: "negative",
-      title: "Just Burguer",
-      amount: "R$ 86,00",
-      category: { name: "Alimentação", icon: "coffee" },
-      date: "10/04/2021",
-    },
-    {
-      id: "3",
-      type: "negative",
-      title: "Aluguel Apartamento",
-      amount: "R$ 1200,00",
-      category: { name: "Casa", icon: "shopping-bag" },
-      date: "10/04/2021",
-    },
-  ];
+  const [data, setData] = useState<DataListProps[]>([]);
+
+  async function loadTransactions() {
+    const dataKey = "@gofinances:transactions";
+    const response = await AsyncStorage.getItem(dataKey);
+
+    const transactions = response ? JSON.parse(response) : [];
+
+    const transactionsFormatted: DataListProps[] = transactions.map(
+      (item: DataListProps) => {
+        const amount = Number(item.amount).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+
+        const dateFormatted = new Date(item.date);
+
+        const date = new Intl.DateTimeFormat("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }).format(dateFormatted);
+
+        return {
+          id: item.id,
+          name: item.name,
+          amount,
+          type: item.type,
+          category: item.category,
+          date,
+        };
+      }
+    );
+
+    setData(transactionsFormatted);
+  }
+
+  useEffect(() => {
+    loadTransactions();
+  }, [data]);
 
   return (
     <Style.Container>
@@ -54,7 +69,9 @@ export function Dashboard() {
               <Style.UserName>Alexandre</Style.UserName>
             </Style.User>
           </Style.UserInfo>
-          <Style.Icon name="power" />
+          <Style.LogoutButton onPress={() => {}}>
+            <Style.Icon name="power" />
+          </Style.LogoutButton>
         </Style.UserWrapper>
       </Style.Header>
 
